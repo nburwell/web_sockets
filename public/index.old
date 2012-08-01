@@ -1,0 +1,66 @@
+<html>
+<head>
+<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
+<script type="text/javascript">
+  var socket;
+
+function setup()
+{
+  connect();
+
+  $(document).keypress(function(e){
+    var char = String.fromCharCode(e.charCode);
+//    console.log( "Sending message: " +  e.char );
+    socket.send(char);
+  });
+};
+
+function connect(){
+  socket = new WebSocket('ws://localhost:8080');
+  socket.onmessage = function(mess) {
+      try
+      {
+        var response = JSON.parse( mess.data );
+      }
+      catch( ex )
+      {
+        alert( "Could not parse message from socket: " + mess.data );
+        return;
+      }
+      
+      console.log( "Message received: " + response.data + ", type: " + response.type );
+      
+      if ( response.type == "Connect" )
+      {
+        $('#connections').html( response.data );
+      }
+      else
+      {
+        $('#output').val( response.data + "\n" + $('#output').val() );
+      }
+  };
+
+  socket.onerror = function(evt) {
+    console.log( evt );
+  }
+
+  console.log( socket );
+};
+
+$( function() {
+  setup();
+} );
+
+$(window).unload( function() {
+  socket.close();
+})
+
+</script>
+</head>
+<body>
+  Socket demo page
+
+  <textarea readonly="readonly" id="output" rows=10 cols=40></textarea>
+  <div id="connections"></div>
+</body>
+</html>
