@@ -25,7 +25,7 @@
     <![endif]-->
     
     <script type="text/javascript">
-  var socket_wrapper;
+  var socket_wrapper, socket_view;
 
 function setup()
 {
@@ -41,18 +41,19 @@ function setup()
     console.log( "Connected, biyatches" );
   } );
   
-  socket_wrapper.on( 'socket', function( att, att2 ) {
-    consoloe.log( att );
-    consoloe.log( att2 );
-  })
+  socket_wrapper.on( 'socket:error', function() {
+    console.log( "Could not connect" );
+  } );
   
   socket_wrapper.on( 'socket:message', function( msg ) {
     console.log( "MESSAGE: " + msg );
   })
-   
-  $('#connect').on( 'click', function() {
-    socket_wrapper.connect();
-  } );
+  
+  
+  socket_view = new SocketView( { model: socket_wrapper } );
+  $('#connect').append( socket_view.$el );
+  
+  socket_view.render();
 };
 
 
@@ -109,8 +110,7 @@ $(window).unload( function() {
                <code>ws://localhost:8080</code>
             </p>
             
-            <p style="margin-top: 1.5em">
-              <a class="btn btn-primary" id="connect"><i class="icon-cog icon-white"></i> Connect</a>
+            <p style="margin-top: 1.5em" id="connect">
             </p>
           </div>
         </div>
@@ -144,6 +144,20 @@ $(window).unload( function() {
       </footer>
 
     </div><!--/.fluid-container-->
+    
+    <!-- TEMPLATES -->
+    
+    <script type="text/html" id="template-socket-connection">
+      <a class="btn btn-primary <%= connected ? 'disabled' : '' %>"><i class="icon-cog icon-white"></i> Connect</a>
+      <a class="btn btn-danger  <%= connected ? '' : 'disabled' %>"><i class="icon-remove icon-white"></i> Disconnect</a>
+    </script>
+    
+    <script type="text/html" id="template-socket-message">
+      <div class='alert alert-info'>
+        <h4><%= name %></h4>
+        <p><%= details %></p>
+      </div>
+    </script>
 
     <!-- Le javascript
     ================================================== -->
@@ -151,6 +165,7 @@ $(window).unload( function() {
     <script src="js/bootstrap.js"></script>
     <script src="js/backbone.js"></script>
     <script src="js/socket.js"></script>
+    <script src="js/views/socket.js"></script>
 
   </body>
 </html>

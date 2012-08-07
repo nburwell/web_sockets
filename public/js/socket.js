@@ -1,9 +1,8 @@
 var socket;
 
 var SocketWrapper = Backbone.Model.extend( {
-
-      initialize: function() { 
-
+      defaults : {
+        connected : false
       },
 
       connect: function() { 
@@ -16,7 +15,11 @@ var SocketWrapper = Backbone.Model.extend( {
           var url = 'ws://' + this.get( 'host' ) + ':' + this.get( 'port');
           var self = this;
           
+          console.log( "Connecting to " + url );
+          
           socket = new WebSocket( url );
+           this.set( { connected : true } );
+
           socket.onmessage = function( msg ) {
               try
               {
@@ -39,8 +42,16 @@ var SocketWrapper = Backbone.Model.extend( {
           };
 
           socket.onerror = function(evt) {
-              dispatcher.trigger( "socket:error" );
-              console.log( evt );
+               this.set( { connected : false } );
+              self.trigger( "socket:error" );
+          }
+      },
+      
+      disconnect: function() {
+          if ( socket )
+          {
+              socket.close();
+              this.set( { connected : false } );
           }
       }
   } );

@@ -1,4 +1,7 @@
+#! /usr/bin/ruby
 require 'rubygems'
+require "bundler/setup"
+
 require 'eventmachine'
 require 'em-websocket'
 require 'em-hiredis'
@@ -38,7 +41,6 @@ EventMachine.run do
   
   redis.subscribe( "chat" ).callback do # |type, channel, message|
     puts "Subscribed to chat"
-    #puts "type: #{type}\nchannel: #{channel}\nmessage: #{message}"
   end
   
   redis.on(:message) do |channel, message|
