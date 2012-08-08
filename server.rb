@@ -1,4 +1,10 @@
 #! /usr/bin/ruby
+# redis server command
+# /usr/local/bin/redis-server ~/.redis_conf &
+
+# EM server command
+# ./server.rb
+
 require 'rubygems'
 require "bundler/setup"
 
@@ -25,7 +31,7 @@ EventMachine.run do
     end
     
     socket.onmessage do |mess|
-      @sockets.each{ |s| s.send( { :type => :Message, :data => mess }.to_json ) }
+      @sockets.each{ |s| next if s == socket; s.send( { :type => :Message, :data => mess }.to_json ) }
     end
     socket.onclose do
       @sockets.delete socket

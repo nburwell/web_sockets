@@ -27,6 +27,15 @@
     <script type="text/javascript">
   var socket_wrapper, socket_view;
 
+function sendIfEnter( textarea, evt )
+{
+  if ( socket && evt.keyCode == '13' )
+  {
+    socket.send( $(textarea).val() );
+    $(textarea).val('');
+  }
+}
+
 function setup()
 {
   if ( WebSocket ) {
@@ -54,6 +63,9 @@ function setup()
   $('#connect').append( socket_view.$el );
   
   socket_view.render();
+  
+  socket_messages_list_view = new SocketMessageListView( { model: socket_wrapper } );
+  $('#messages').append( socket_messages_list_view.$el );
 };
 
 
@@ -117,21 +129,14 @@ $(window).unload( function() {
         
         <div class="span9">
           <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
+            <h2>Realtime messages</h2>
+            <div class="span4" id="messages">
             </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
+            
+            <div class="span7">
+              <h4>Send a message:</h4>
+              <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30></textarea>
+            </div><!--/span--
           </div><!--/row-->
           
         </div><!--/span-->
@@ -158,13 +163,17 @@ $(window).unload( function() {
         <p><%= details %></p>
       </div>
     </script>
+    
+    <script type="text/html" id="template-socket-message-list">
+      <div></div>
+    </script>
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/bootstrap.js"></script>
     <script src="js/backbone.js"></script>
-    <script src="js/socket.js"></script>
+    <script src="js/models/socket.js"></script>
     <script src="js/views/socket.js"></script>
 
   </body>

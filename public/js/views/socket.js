@@ -31,20 +31,37 @@ var SocketView = Backbone.View.extend({
 
 var SocketMessageView = Backbone.View.extend({
   template: _.template($("#template-socket-message").html()),
-
-  initialize: function() {
-    console.log( "initialize" );
-    
-    this.model.bind( "socket:message", this.onMessage, this );
-  },
-  
-  onMessage: function( msg ) {
-    console.log( "message: " + msg );
-  },
-  
+ 
   render: function() {
-    $(this.el).html( this.template( this.model.toJSON() ) );
+    $(this.el).html( this.template( this.model ) );
     
     return this;
   }
 });
+
+var SocketMessageListView = Backbone.View.extend({
+  template: _.template($("#template-socket-message-list").html()),
+
+  initialize: function() {
+    this.model.bind( "socket:message", this.onMessage, this );
+    this.data = [];
+  },
+  
+  onMessage: function( msg ) {
+    console.log( "message in list view: " + msg );
+    this.data.push( { 'name' : "Chat", 'details' : msg } );
+    this.render();
+  },
+  
+  render: function() {
+    $(this.el).html('');
+    
+    _.each( this.data, function( msg ) {
+        var output = new SocketMessageView( { model : msg } ).render();
+        console.log( output.$el.html() )
+        $(this.el).prepend( output.$el.html() );
+    }, this );
+
+    return this;
+  }
+})
