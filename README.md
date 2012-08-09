@@ -19,7 +19,9 @@ Experiments and demos with event machine, web_sockets and event-based JavaScript
         /usr/local/bin/redis-server &
         ./server.rb
 
-5. To publish commands to the redis channel, do something like:
+5. View the client page in a browser [localhost:4000](http://localhost:4000)
+
+6. To publish commands to the redis channel, do something like:
 
         redis-cli
         > publish 'chat' 'This is a test message from redis command line client'
