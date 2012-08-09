@@ -45,13 +45,14 @@ EventMachine.run do
     puts "Error code: #{code}"
   end
   
+  redis.subscribe( "change" )
   redis.subscribe( "chat" ).callback do # |type, channel, message|
-    puts "Subscribed to chat"
+    puts "Subscribed to chat and change channels"
   end
   
   redis.on(:message) do |channel, message|
     puts "message on #{channel}: #{message}"
-    @sockets.each{ |s| s.send( { :type => :Message, :data => message}.to_json ) }
+    @sockets.each{ |s| s.send( { :type => channel, :data => message}.to_json ) }
   end
 
   puts ">> WebSocket server listening on 0.0.0.0:8080"

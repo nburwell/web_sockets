@@ -46,23 +46,16 @@ function setup()
   }
   
   socket_wrapper = new SocketWrapper( { host : 'localhost', port : 8080 } );
-  socket_wrapper.on( 'socket:connect', function() {
-    console.log( "Connected, biyatches" );
-  } );
-  
-  socket_wrapper.on( 'socket:error', function() {
-    console.log( "Could not connect" );
-  } );
-  
-  socket_wrapper.on( 'socket:message', function( msg ) {
-    console.log( "MESSAGE: " + msg );
-  })
-  
   
   socket_view = new SocketView( { model: socket_wrapper } );
   $('#connect').append( socket_view.$el );
   
   socket_view.render();
+  
+  // auto connect if connect is in hash
+  if ( window.location.hash.search( /connect/ ) != -1 ) {
+    socket_wrapper.connect();
+  }
   
   socket_messages_list_view = new SocketMessageListView( { model: socket_wrapper } );
   $('#messages').append( socket_messages_list_view.$el );
@@ -108,7 +101,7 @@ $(window).unload( function() {
       <div class="row-fluid">
         <div class="span3">
           <div class="well">
-            <h1>Server Connection</h1>
+            <h2>Server Connection</h2>
             
             <div class="alert alert-success if-web-sockets" style="display:none">
               Your browser supports web sockets.
@@ -129,14 +122,15 @@ $(window).unload( function() {
         
         <div class="span9">
           <div class="row-fluid">
-            <h2>Realtime messages</h2>
-            <div class="span4" id="messages">
+            <div class="span8">
+              <h2>Incoming messages</h2>
+              <div id="messages"></div>
             </div><!--/span-->
             
-            <div class="span7">
-              <h4>Send a message:</h4>
+            <div class="span4">
+              <h4 style="margin-top: 1em">Send a message:</h4>
               <textarea onkeyup="sendIfEnter(this, event)" rows=3 col=30></textarea>
-            </div><!--/span--
+            </div><!--/span-->
           </div><!--/row-->
           
         </div><!--/span-->
@@ -153,6 +147,7 @@ $(window).unload( function() {
     <!-- TEMPLATES -->
     
     <script type="text/html" id="template-socket-connection">
+      <p>Status: <b><%= connected ? 'connected' : 'not connected' %></b></p>
       <a class="btn btn-primary <%= connected ? 'disabled' : '' %>"><i class="icon-cog icon-white"></i> Connect</a>
       <a class="btn btn-danger  <%= connected ? '' : 'disabled' %>"><i class="icon-remove icon-white"></i> Disconnect</a>
     </script>

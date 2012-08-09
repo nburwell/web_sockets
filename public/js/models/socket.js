@@ -18,12 +18,13 @@ var SocketWrapper = Backbone.Model.extend( {
           console.log( "Connecting to " + url );
           
           socket = new WebSocket( url );
-           this.set( { connected : true } );
+          this.set( { connected : true } );
 
           socket.onmessage = function( msg ) {
               try
               {
                 var response = JSON.parse( msg.data );
+                console.log( response );
               }
               catch( ex )
               {
@@ -37,13 +38,18 @@ var SocketWrapper = Backbone.Model.extend( {
               }
               else
               {
-                  self.trigger( "socket:message", response['data'] );
+                  self.trigger( "socket:message", response['type'], response['data'] );
               }
           };
 
           socket.onerror = function(evt) {
-               this.set( { connected : false } );
+              self.set( { connected : false } );
               self.trigger( "socket:error" );
+          };
+          
+          socket.onclose = function(evt) {
+              self.set( { connected : false } );
+              console.log( evt );
           }
       },
       

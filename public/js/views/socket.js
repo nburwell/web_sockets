@@ -47,9 +47,9 @@ var SocketMessageListView = Backbone.View.extend({
     this.data = [];
   },
   
-  onMessage: function( msg ) {
+  onMessage: function( type, msg ) {
     console.log( "message in list view: " + msg );
-    this.data.push( { 'name' : "Chat", 'details' : msg } );
+    this.data.push( { 'name' : type, 'details' : msg } );
     this.render();
   },
   
