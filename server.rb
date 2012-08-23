@@ -17,13 +17,13 @@ require 'json'
 
 @sockets = []
 
-EventMachine.run do
-  class App < Sinatra::Base
-    get '/' do
-      send_file File.join(settings.public_folder, 'index.html')
-    end
+class DemoApp < Sinatra::Base
+  get '/' do
+    send_file File.join(settings.public_folder, 'index.html')
   end
-
+end
+  
+EventMachine.run do
   EventMachine::WebSocket.start(:host => '0.0.0.0', :port => 8080) do |socket|
     socket.onopen do
       @sockets << socket
@@ -57,5 +57,5 @@ EventMachine.run do
 
   puts ">> WebSocket server listening on 0.0.0.0:8080"
   
-  Thin::Server.start App, '0.0.0.0', 4000
+  Thin::Server.start DemoApp, '0.0.0.0', 4000
 end
