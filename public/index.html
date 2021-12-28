@@ -31,7 +31,9 @@ function sendIfEnter( textarea, evt )
 {
   if ( socket && evt.keyCode == '13' )
   {
-    socket.send( $(textarea).val() );
+    let msg = $(textarea).val();
+    console.log("sending message", msg);
+    socket.send(msg);
     $(textarea).val('');
   }
 }

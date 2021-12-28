@@ -9,19 +9,14 @@ Experiments and demos with event machine, web_sockets and event-based JavaScript
 2. From the directory:
 
         bundle install
-
-  a. If you get an error about 'associate_callback_target' on startup, try installing eventmachine manually:
-  
-            sudo gem install eventmachine
           
 3. Install redis if you want to play with pub/sub
 
         brew install redis
 
-4. Start the servers:
+4. Start the server (ensure redis is running):
 
-        /usr/local/bin/redis-server &
-        ./server.rb
+        bundle exec ruby server.rb
 
 5. View the client page in a browser [localhost:4000](http://localhost:4000)
 

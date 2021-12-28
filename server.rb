@@ -31,6 +31,8 @@ EventMachine.run do
     end
     
     socket.onmessage do |mess|
+      puts "Message received: #{mess}, sockets: #{@sockets.size}"
+      # send to all sockets except the one that sent the message
       @sockets.each{ |s| next if s == socket; s.send( { :type => :Message, :data => mess }.to_json ) }
     end
     socket.onclose do
@@ -39,14 +41,15 @@ EventMachine.run do
     end
   end
   
-  redis = EM::Hiredis.connect
+  redis = EM::Hiredis::PubsubClient.new
+  redis.connect
   
   redis.errback do |code|
     puts "Error code: #{code}"
   end
   
-  redis.subscribe( "change" )
-  redis.subscribe( "chat" ).callback do # |type, channel, message|
+  redis.subscribe("change")
+  redis.subscribe("chat").callback do # |type, channel, message|
     puts "Subscribed to chat and change channels"
   end
   
@@ -57,5 +60,5 @@ EventMachine.run do
 
   puts ">> WebSocket server listening on 0.0.0.0:8080"
   
-  Thin::Server.start DemoApp, '0.0.0.0', 4000
+  Thin::Server.start DemoApp, '0.0.0.0', 4000, signals: false
 end
